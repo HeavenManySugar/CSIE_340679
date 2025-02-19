@@ -150,6 +150,7 @@ class Battle { // represents a battle game
 	Deck player1;
 	Deck player2;
 	Deck trick;
+	boolean turn = true;
 
 	// constructor of a battle without cards
 	Battle() {
@@ -204,14 +205,24 @@ class Battle { // represents a battle game
 
 	// effectue un tour de jeu
 	boolean oneRound() {
+		return oneRound(true);
+	}
+
+	boolean oneRound(boolean disableTurn) {
 		int card1;
 		int card2;
 		if (isOver()) {
 			return false;
 		}
 		while (!isOver()) {
-			card1 = player1.cards.removeFirst();
-			card2 = player2.cards.removeFirst();
+			if (disableTurn || turn) {
+				card1 = player1.cards.removeFirst();
+				card2 = player2.cards.removeFirst();
+			} else {
+				card2 = player2.cards.removeFirst();
+				card1 = player1.cards.removeFirst();
+			}
+			turn = !turn; // Alternate turn
 			trick.cards.add(card1);
 			trick.cards.add(card2);
 			if (card1 > card2) {
@@ -224,8 +235,14 @@ class Battle { // represents a battle game
 				if (isOver()) {
 					return false;
 				}
-				trick.cards.add(player1.cards.removeFirst());
-				trick.cards.add(player2.cards.removeFirst());
+				if (disableTurn || turn) {
+					trick.cards.add(player1.cards.removeFirst());
+					trick.cards.add(player2.cards.removeFirst());
+				} else {
+					trick.cards.add(player2.cards.removeFirst());
+					trick.cards.add(player1.cards.removeFirst());
+				}
+				turn = !turn; // Alternate turn
 				if (isOver()) {
 					return false;
 				}
@@ -279,6 +296,34 @@ class Battle { // represents a battle game
 
 	// performs statistics on the number of infinite games
 	static void stats(int nbVals, int nbGames) {
-		throw new Error("Method stats(int bvVals, int nb_of_games) to complete (Question 4.2)");
+		int player1Wins = 0;
+		int player2Wins = 0;
+		int draws = 0;
+		int infiniteGames = 0;
+
+		for (int i = 0; i < nbGames; i++) {
+			Battle battle = new Battle(nbVals);
+			switch (battle.game()) {
+				case 0:
+					draws++;
+					break;
+				case 1:
+					player1Wins++;
+					break;
+				case 2:
+					player2Wins++;
+					break;
+				case 3:
+					infiniteGames++;
+					break;
+				default:
+					break;
+			}
+		}
+
+		System.out.println("Player 1 wins: " + player1Wins);
+		System.out.println("Player 2 wins: " + player2Wins);
+		System.out.println("Draws: " + draws);
+		System.out.println("Infinite games: " + infiniteGames);
 	}
 }
