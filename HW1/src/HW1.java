@@ -188,11 +188,12 @@ class Battle { // represents a battle game
 	Battle(int nbVals) {
 		player1 = new Deck();
 		player2 = new Deck();
-		trick = new Deck(nbVals);
-		trick.riffleShuffle(7);
-		while (!trick.cards.isEmpty()) {
-			player1.cards.add(trick.cards.removeFirst());
-			player2.cards.add(trick.cards.removeFirst());
+		trick = new Deck();
+		Deck d = new Deck(nbVals);
+		d.riffleShuffle(7);
+		while (!d.cards.isEmpty()) {
+			player1.pick(d);
+			player2.pick(d);
 		}
 	}
 
