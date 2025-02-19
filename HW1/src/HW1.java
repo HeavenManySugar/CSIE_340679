@@ -236,12 +236,23 @@ class Battle { // represents a battle game
 
 	// returns the winner
 	int winner() {
-		throw new Error("Method winner() to complete (Question 3.3)");
+		int a = player1.cards.size();
+		int b = player2.cards.size();
+		if (a > b) {
+			return 1;
+		} else if (a < b) {
+			return 2;
+		} else {
+			return 0;
+		}
 	}
 
 	// plays a game with a fixed maximum number of moves
 	int game(int turns) {
-		throw new Error("Method game(int turns) to complete (Question 3.3)");
+		int i = 0;
+		while (i++ < turns && oneRound())
+			;
+		return winner();
 	}
 
 	// Question 4.1
