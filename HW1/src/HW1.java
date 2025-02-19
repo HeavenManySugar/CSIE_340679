@@ -278,10 +278,14 @@ class Battle { // represents a battle game
 
 	// plays a game without limit of moves, but with detection of infinite games
 	int game() {
+		return game(true);
+	}
+
+	int game(boolean disableTurn) {
 		Set<String> p1Set = new HashSet<String>();
 		Set<String> p2Set = new HashSet<String>();
 
-		while (oneRound()) {
+		while (oneRound(disableTurn)) {
 			if (p1Set.contains(player1.toString()) || p2Set.contains(player2.toString())) {
 				return 3;
 			}
@@ -303,7 +307,7 @@ class Battle { // represents a battle game
 
 		for (int i = 0; i < nbGames; i++) {
 			Battle battle = new Battle(nbVals);
-			switch (battle.game()) {
+			switch (battle.game(false)) {
 				case 0:
 					draws++;
 					break;
