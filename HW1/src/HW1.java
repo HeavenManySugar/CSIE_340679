@@ -91,7 +91,13 @@ class Deck { // represents a pack of cards
 
 	// chooses a position for the cut
 	int cut() {
-		throw new Error("Method cut() to complete (Question 2.1)");
+		int result = 0;
+		for (int i = 0; i < cards.size(); i++) {
+			if (Math.random() < 0.5) {
+				result++;
+			}
+		}
+		return result;
 	}
 
 	// cuts the current packet in two at the position given by cut()
