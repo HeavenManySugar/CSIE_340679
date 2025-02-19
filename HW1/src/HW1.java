@@ -197,12 +197,39 @@ class Battle { // represents a battle game
 
 	// test if the game is over
 	boolean isOver() {
-		throw new Error("Method isOver() to complete (Question 3.2)");
+		return player1.cards.isEmpty() || player2.cards.isEmpty();
 	}
 
 	// effectue un tour de jeu
 	boolean oneRound() {
-		throw new Error("Method oneRound() to complete (Question 3.2)");
+		int card1;
+		int card2;
+		if (isOver()) {
+			return false;
+		}
+		while (!isOver()) {
+			card1 = player1.cards.removeFirst();
+			card2 = player2.cards.removeFirst();
+			trick.cards.add(card1);
+			trick.cards.add(card2);
+			if (card1 > card2) {
+				player1.pickAll(trick);
+				return true;
+			} else if (card1 < card2) {
+				player2.pickAll(trick);
+				return true;
+			} else {
+				if (isOver()) {
+					return false;
+				}
+				trick.cards.add(player1.cards.removeFirst());
+				trick.cards.add(player2.cards.removeFirst());
+				if (isOver()) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	// Question 3.3
