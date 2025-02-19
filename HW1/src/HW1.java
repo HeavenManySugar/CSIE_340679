@@ -8,9 +8,8 @@ import java.util.LinkedList;
 
 class Deck { // represents a pack of cards
 
-	
 	LinkedList<Integer> cards;
-	// The methods toString, hashCode, equals, and copy are used for 
+	// The methods toString, hashCode, equals, and copy are used for
 	// display and testing, you should not modify them.
 
 	@Override
@@ -22,7 +21,7 @@ class Deck { // represents a pack of cards
 	public int hashCode() {
 		return 0;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		Deck d = (Deck) o;
@@ -58,19 +57,19 @@ class Deck { // represents a pack of cards
 
 	// takes a card from deck d to put it at the end of the current packet
 	int pick(Deck d) {
-	//	throw new Error("Method pick(Deck d) to complete (Question 1)");
-			if (!d.cards.isEmpty()) {
-				int x = d.cards.removeFirst();
-				cards.addLast(x);
-				return x;
-			} else {
-				return -1;
-			}
+		// throw new Error("Method pick(Deck d) to complete (Question 1)");
+		if (!d.cards.isEmpty()) {
+			int x = d.cards.removeFirst();
+			cards.addLast(x);
+			return x;
+		} else {
+			return -1;
+		}
 	}
 
 	// takes all the cards from deck d to put them at the end of the current deck
 	void pickAll(Deck d) {
-	//	throw new Error("Method pickAll(Deck d) to complete (Question 1)");
+		// throw new Error("Method pickAll(Deck d) to complete (Question 1)");
 		while (!d.cards.isEmpty()) {
 			pick(d);
 		}
@@ -78,11 +77,11 @@ class Deck { // represents a pack of cards
 
 	// checks if the current packet is valid
 	boolean isValid(int nbVals) {
-	//	throw new Error("Method isValid(int nbVals) to complete (Question 1)");
-	int[] numbers = new int[nbVals];
+		// throw new Error("Method isValid(int nbVals) to complete (Question 1)");
+		int[] numbers = new int[nbVals];
 		for (Integer x : cards) {
-			if (x < 1 || x > nbVals || numbers	[x - 1] > 3) 
-				return false;			
+			if (x < 1 || x > nbVals || numbers[x - 1] > 3)
+				return false;
 			numbers[x - 1]++;
 		}
 		return true;
@@ -127,7 +126,7 @@ class Battle { // represents a battle game
 		player2 = new Deck();
 		trick = new Deck();
 	}
-	
+
 	// constructor from fields
 	Battle(Deck player1, Deck player2, Deck trick) {
 		this.player1 = player1;
@@ -147,7 +146,8 @@ class Battle { // represents a battle game
 	// string representing the battle
 	@Override
 	public String toString() {
-		return "Player 1 : " + player1.toString() + "\n" + "Player 2 : " + player2.toString() + "\nPli " + trick.toString();
+		return "Player 1 : " + player1.toString() + "\n" + "Player 2 : " + player2.toString() + "\nPli "
+				+ trick.toString();
 	}
 
 	// Question 3.1
