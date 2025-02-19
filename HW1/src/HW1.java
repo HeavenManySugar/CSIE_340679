@@ -183,7 +183,14 @@ class Battle { // represents a battle game
 
 	// constructor of a battle with a deck of cards of nbVals values
 	Battle(int nbVals) {
-		throw new Error("Constructor Battle() to complete (Question 3.1)");
+		player1 = new Deck();
+		player2 = new Deck();
+		trick = new Deck(nbVals);
+		trick.riffleShuffle(7);
+		while (!trick.cards.isEmpty()) {
+			player1.cards.add(trick.cards.removeFirst());
+			player2.cards.add(trick.cards.removeFirst());
+		}
 	}
 
 	// Question 3.2
