@@ -137,7 +137,9 @@ class Deck { // represents a pack of cards
 
 	// shuffles the current deck using the riffle shuffle
 	void riffleShuffle(int m) {
-		throw new Error("Method riffleShuffle(int m) to complete (Question 2.3)");
+		for (int i = 0; i < m; i++) {
+			riffleWith(split());
+		}
 	}
 }
 
