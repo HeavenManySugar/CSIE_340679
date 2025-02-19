@@ -114,21 +114,21 @@ class Deck { // represents a pack of cards
 
 	// mixes the current deck and the deck d
 	void riffleWith(Deck d) {
-		LinkedList<Integer> newCards = new LinkedList<Integer>();
+		Deck f = new Deck();
 		while (!cards.isEmpty() && !d.cards.isEmpty()) {
 			if (Math.random() < 0.5) {
-				newCards.add(cards.removeFirst());
+				f.cards.add(cards.removeFirst());
 			} else {
-				newCards.add(d.cards.removeFirst());
+				f.cards.add(d.cards.removeFirst());
 			}
 		}
 		while (!cards.isEmpty()) {
-			newCards.add(cards.removeFirst());
+			f.cards.add(cards.removeFirst());
 		}
 		while (!d.cards.isEmpty()) {
-			newCards.add(d.cards.removeFirst());
+			f.cards.add(d.cards.removeFirst());
 		}
-		cards = newCards;
+		cards = f.cards;
 	}
 
 	// Question 2.3
