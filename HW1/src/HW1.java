@@ -4,7 +4,9 @@
  * 		- Battle represents a battle game.
  */
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 class Deck { // represents a pack of cards
 
@@ -259,7 +261,18 @@ class Battle { // represents a battle game
 
 	// plays a game without limit of moves, but with detection of infinite games
 	int game() {
-		throw new Error("Method game() to complete (Question 4.1)");
+		Set<String> p1Set = new HashSet<String>();
+		Set<String> p2Set = new HashSet<String>();
+
+		while (oneRound()) {
+			if (p1Set.contains(player1.toString()) || p2Set.contains(player2.toString())) {
+				return 3;
+			}
+			p1Set.add(player1.toString());
+			p2Set.add(player2.toString());
+		}
+
+		return winner();
 	}
 
 	// Question 4.2
