@@ -282,18 +282,23 @@ class Battle { // represents a battle game
 	}
 
 	int game(boolean disableTurn) {
-		Set<String> p1Set = new HashSet<String>();
-		Set<String> p2Set = new HashSet<String>();
+		// Floyd Cycle Detection Algorithm (Tortoise and Hare Algorithm)
+		Battle tortoise = this.copy();
+		Battle hare = this;
 
-		while (oneRound(disableTurn)) {
-			if (p1Set.contains(player1.toString()) || p2Set.contains(player2.toString())) {
+		while (!hare.isOver()) {
+			tortoise.oneRound(disableTurn);
+			hare.oneRound(disableTurn);
+			if (hare.isOver()) {
+				break;
+			}
+			hare.oneRound(disableTurn);
+			if (hare.toString().equals(tortoise.toString())) {
 				return 3;
 			}
-			p1Set.add(player1.toString());
-			p2Set.add(player2.toString());
 		}
 
-		return winner();
+		return hare.winner();
 	}
 
 	// Question 4.2
