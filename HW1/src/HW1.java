@@ -215,16 +215,16 @@ class Battle { // represents a battle game
 			return false;
 		}
 		while (!isOver()) {
+			card1 = player1.cards.removeFirst();
+			card2 = player2.cards.removeFirst();
 			if (disableTurn || turn) {
-				card1 = player1.cards.removeFirst();
-				card2 = player2.cards.removeFirst();
+				trick.cards.add(card1);
+				trick.cards.add(card2);
 			} else {
-				card2 = player2.cards.removeFirst();
-				card1 = player1.cards.removeFirst();
+				trick.cards.add(card2);
+				trick.cards.add(card1);
 			}
 			turn = !turn; // Alternate turn
-			trick.cards.add(card1);
-			trick.cards.add(card2);
 			if (card1 > card2) {
 				player1.pickAll(trick);
 				return true;
@@ -236,11 +236,11 @@ class Battle { // represents a battle game
 					return false;
 				}
 				if (disableTurn || turn) {
-					trick.cards.add(player1.cards.removeFirst());
-					trick.cards.add(player2.cards.removeFirst());
+					trick.pick(player1);
+					trick.pick(player2);
 				} else {
-					trick.cards.add(player2.cards.removeFirst());
-					trick.cards.add(player1.cards.removeFirst());
+					trick.pick(player2);
+					trick.pick(player1);
 				}
 				turn = !turn; // Alternate turn
 				if (isOver()) {
