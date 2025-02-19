@@ -102,7 +102,12 @@ class Deck { // represents a pack of cards
 
 	// cuts the current packet in two at the position given by cut()
 	Deck split() {
-		throw new Error("Method split() to complete (Question 2.1)");
+		Deck d = new Deck();
+		int cut = cut();
+		for (int i = 0; i < cut; i++) {
+			d.cards.add(cards.removeFirst());
+		}
+		return d;
 	}
 
 	// Question 2.2
