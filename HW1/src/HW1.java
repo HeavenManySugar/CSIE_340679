@@ -115,8 +115,10 @@ class Deck { // represents a pack of cards
 	// mixes the current deck and the deck d
 	void riffleWith(Deck d) {
 		Deck f = new Deck();
+		double p;
 		while (!cards.isEmpty() && !d.cards.isEmpty()) {
-			if (Math.random() < 0.5) {
+			p = (double) cards.size() / (cards.size() + d.cards.size());
+			if (Math.random() < p) {
 				f.cards.add(cards.removeFirst());
 			} else {
 				f.cards.add(d.cards.removeFirst());
