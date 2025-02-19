@@ -305,34 +305,15 @@ class Battle { // represents a battle game
 
 	// performs statistics on the number of infinite games
 	static void stats(int nbVals, int nbGames) {
-		int player1Wins = 0;
-		int player2Wins = 0;
-		int draws = 0;
-		int infiniteGames = 0;
+		int[] result = new int[4];
 
 		for (int i = 0; i < nbGames; i++) {
-			Battle battle = new Battle(nbVals);
-			switch (battle.game(false)) {
-				case 0:
-					draws++;
-					break;
-				case 1:
-					player1Wins++;
-					break;
-				case 2:
-					player2Wins++;
-					break;
-				case 3:
-					infiniteGames++;
-					break;
-				default:
-					break;
-			}
+			result[new Battle(nbVals).game(false)]++;
 		}
 
-		System.out.println("Player 1 wins: " + player1Wins);
-		System.out.println("Player 2 wins: " + player2Wins);
-		System.out.println("Draws: " + draws);
-		System.out.println("Infinite games: " + infiniteGames);
+		System.out.println("Draws: " + result[0]);
+		System.out.println("Player 1 wins: " + result[1]);
+		System.out.println("Player 2 wins: " + result[2]);
+		System.out.println("Infinite games: " + result[3]);
 	}
 }
