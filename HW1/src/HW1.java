@@ -4,9 +4,7 @@
  * 		- Battle represents a battle game.
  */
 
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 class Deck { // represents a pack of cards
 
