@@ -1,4 +1,4 @@
- 
+
 /* HW2. Fruits and hash tables
  * This file contains 7 classes:
  * 		- Row represents a row of fruits,
@@ -9,7 +9,6 @@
  * 		- Triple manipulates triplets,
  * 		- CountConfigurationsHashMap counts stable configurations using the HashMap of java.
  */
-
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -106,7 +105,6 @@ class Row { // represent a row of fruits
 		}
 	}
 
-
 	// check if the row can be stacked with rows r1 and r2
 	// without having three fruits of the same type adjacent
 	boolean areStackable(Row r1, Row r2) {
@@ -121,21 +119,43 @@ class Row { // represent a row of fruits
 }
 
 // Naive counting
-class CountConfigurationsNaive {  // counting of stable configurations
+class CountConfigurationsNaive { // counting of stable configurations
 
 	// Question 2
 
 	// returning the number of grids whose first lines are r1 and r2,
 	// whose lines are lines of rows and whose height is height
 	static long count(Row r1, Row r2, LinkedList<Row> rows, int height) {
-		throw new Error(
-				"method count(Row r1, Row r2, LinkedList<Row> rows, int height) of the class CountConfigurationsHashNaive to be completed (Question 2)");
+		if (height <= 1) {
+			return 0;
+		} else if (height == 2) {
+			return 1;
+		}
 
+		long sum = 0;
+		for (Row r3 : rows) {
+			if (r3.areStackable(r1, r2)) {
+				sum += count(r2, r3, rows, height - 1);
+			}
+		}
+		return sum;
 	}
 
 	// returning the number of grids with n lines and n columns
 	static long count(int n) {
-		throw new Error("method count(int n) of the class CountConfigurationsHashNaive to be completed (Question 2)");
+		if (n == 0) {
+			return 1;
+		} else if (n == 1) {
+			return 2;
+		}
+		LinkedList<Row> rows = Row.allStableRows(n);
+		long count = 0;
+		for (Row r1 : rows) {
+			for (Row r2 : rows) {
+				count += count(r1, r2, rows, n);
+			}
+		}
+		return count;
 	}
 }
 
@@ -163,19 +183,22 @@ class HashTable { // hash table
 
 	// constructor
 	HashTable() {
-		throw new Error("Constructor HashTable() to be completed (Question 3.1)");
+		this.buckets = new Vector<LinkedList<Quadruple>>(M);
+		for (int i = 0; i < M; i++) {
+			this.buckets.add(new LinkedList<Quadruple>());
+		}
 	}
 
 	// Question 3.2
 
 	// return the hash code of the triplet (r1, r2, height)
 	static int hashCode(Row r1, Row r2, int height) {
-		throw new Error("method hashCode(Row r1, Row r2, int height) to be completed (Question 3.2)");
+		return (r1.hashCode() * r2.hashCode() + height) % M;
 	}
 
 	// return the bucket of the triplet (r1, r2, height)
 	int bucket(Row r1, Row r2, int height) {
-		throw new Error("method bucket(Row r1, Row r2, int height) to be completed (Question 3.2)");
+		return hashCode(r1, r2, height);
 	}
 
 	// Question 3.3
@@ -183,14 +206,22 @@ class HashTable { // hash table
 	// add the quadruplet (r1, r2, height, result) in the bucket indicated by the
 	// method bucket
 	void add(Row r1, Row r2, int height, long result) {
-		throw new Error("method add(Row r1, Row r2, int height, long result) to be completed (Question 3.3)");
+		Quadruple q = new Quadruple(r1, r2, height, result);
+		int bucket = bucket(r1, r2, height);
+		this.buckets.get(bucket).add(q);
 	}
 
 	// Question 3.4
 
 	// search in the table an entry for the triplet (r1, r2, height)
 	Long find(Row r1, Row r2, int height) {
-		throw new Error("method Quadruple find(Row r1, Row r2, int height) to be completed (Question 3.4)");
+		int bucket = bucket(r1, r2, height);
+		for (Quadruple q : this.buckets.get(bucket)) {
+			if (q.r1.equals(r1) && q.r2.equals(r2) && q.height == height) {
+				return q.result;
+			}
+		}
+		return null;
 	}
 
 }
@@ -204,20 +235,68 @@ class CountConfigurationsHashTable { // counting of stable configurations using 
 	// whose lines are lines of rows and whose height is height
 	// using our hash table
 	static long count(Row r1, Row r2, LinkedList<Row> rows, int height) {
-		throw new Error(
-				"method count(Row r1, Row r2, LinkedList<Row> rows, int height) of the class CountConfigurationsHashTable to be completed (Question 4)");
+		Long res = memo.find(r1, r2, height);
+		if (res != null) {
+			return res;
+		}
+
+		if (height <= 1) {
+			return 0;
+		} else if (height == 2) {
+			return 1;
+		}
+
+		long sum = 0;
+		for (Row r3 : rows) {
+			if (r3.areStackable(r1, r2)) {
+				sum += count(r2, r3, rows, height - 1);
+			}
+		}
+		memo.add(r1, r2, height, sum);
+		return sum;
 	}
 
 	// return the number of grids with n lines and n columns
 	static long count(int n) {
-		throw new Error("method count(int n) of the class CountConfigurationsHashTable to be completed (Question 4)");
+		if (n == 0) {
+			return 1;
+		} else if (n == 1) {
+			return 2;
+		}
+		LinkedList<Row> rows = Row.allStableRows(n);
+		long count = 0;
+		for (Row r1 : rows) {
+			for (Row r2 : rows) {
+				count += count(r1, r2, rows, n);
+			}
+		}
+		return count;
 	}
 }
 
-//Use of HashMap
+// Use of HashMap
 
 class Triple { // triplet (r1, r2, height)
-	// to be completed
+	Row r1;
+	Row r2;
+	int height;
+
+	Triple(Row r1, Row r2, int height) {
+		this.r1 = r1;
+		this.r2 = r2;
+		this.height = height;
+	}
+
+	@Override
+	public int hashCode() {
+		return (r1.hashCode() * r2.hashCode() + height);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		Triple that = (Triple) o;
+		return this.r1.equals(that.r1) && this.r2.equals(that.r2) && this.height == that.height;
+	}
 }
 
 class CountConfigurationsHashMap { // counting of stable configurations using the HashMap of java
@@ -229,12 +308,42 @@ class CountConfigurationsHashMap { // counting of stable configurations using th
 	// whose lines are lines of rows and whose height is height
 	// using the HashMap of java
 	static long count(Row r1, Row r2, LinkedList<Row> rows, int height) {
-		throw new Error(
-				"method count(Row r1, Row r2, LinkedList<Row> rows, int height) of the class CountConfigurationsHashMap to be completed (Question 5)");
+		Triple t = new Triple(r1, r2, height);
+		Long res = memo.get(t);
+		if (res != null) {
+			return res;
+		}
+
+		if (height <= 1) {
+			return 0;
+		} else if (height == 2) {
+			return 1;
+		}
+
+		long sum = 0;
+		for (Row r3 : rows) {
+			if (r3.areStackable(r1, r2)) {
+				sum += count(r2, r3, rows, height - 1);
+			}
+		}
+		memo.put(t, sum);
+		return sum;
 	}
 
 	// return the number of grids with n lines and n columns
 	static long count(int n) {
-		throw new Error("method count(int n) of the class CountConfigurationsHashMap to be completed (Question 5)");
+		if (n == 0) {
+			return 1;
+		} else if (n == 1) {
+			return 2;
+		}
+		LinkedList<Row> rows = Row.allStableRows(n);
+		long count = 0;
+		for (Row r1 : rows) {
+			for (Row r2 : rows) {
+				count += count(r1, r2, rows, n);
+			}
+		}
+		return count;
 	}
 }
