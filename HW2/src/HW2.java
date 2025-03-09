@@ -149,13 +149,35 @@ class CountConfigurationsNaive { // counting of stable configurations
 			return 2;
 		}
 		LinkedList<Row> rows = Row.allStableRows(n);
-		long count = 0;
-		for (Row r1 : rows) {
-			for (Row r2 : rows) {
-				count += count(r1, r2, rows, n);
+		int size = rows.size();
+		long[][][] dp = new long[n + 1][size][size];
+
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				dp[2][i][j] = 1;
 			}
 		}
-		return count;
+
+		for (int h = 3; h <= n; h++) {
+			for (int i = 0; i < size; i++) {
+				for (int j = 0; j < size; j++) {
+					for (int k = 0; k < size; k++) {
+						if (rows.get(k).areStackable(rows.get(i), rows.get(j))) {
+							dp[h][j][k] += dp[h - 1][i][j];
+						}
+					}
+				}
+			}
+		}
+
+		long totalCount = 0;
+		for (int i = 0; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				totalCount += dp[n][i][j];
+			}
+		}
+
+		return totalCount;
 	}
 }
 
