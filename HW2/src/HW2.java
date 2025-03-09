@@ -142,6 +142,23 @@ class CountConfigurationsNaive { // counting of stable configurations
 	}
 
 	// returning the number of grids with n lines and n columns
+	static long OriginalCount(int n) {
+		if (n == 0) {
+			return 1;
+		} else if (n == 1) {
+			return 2;
+		}
+		LinkedList<Row> rows = Row.allStableRows(n);
+		long count = 0;
+		for (Row r1 : rows) {
+			for (Row r2 : rows) {
+				count += count(r1, r2, rows, n);
+			}
+		}
+		return count;
+	}
+
+	// Use dp to optimize the counting
 	static long count(int n) {
 		if (n == 0) {
 			return 1;
