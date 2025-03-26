@@ -1,3 +1,4 @@
+
 /**
  * HW4. Backtracking, solution and maze generation <br>
  * This file contains 2 classes: <br> designed by Jean-Christophe Filliâtre
@@ -7,9 +8,10 @@
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-
+import java.util.Set;
 import java.io.IOException;
 
 import java.nio.charset.StandardCharsets;
@@ -18,17 +20,18 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * This class extends and enriches the representation of a cell of the maze. <br>
+ * This class extends and enriches the representation of a cell of the maze.
+ * <br>
  * It provides to a cell the operations to: <br>
  * -) find a path to the exit <br>
  * -) Generate a maze recursively
  */
 class ExtendedCell extends Cell {
-	
+
 	public ExtendedCell(Maze maze) {
 		super(maze);
 	}
-	
+
 	// Question 1
 
 	/**
@@ -39,7 +42,22 @@ class ExtendedCell extends Cell {
 	boolean searchPath() {
 		maze.slow(); // slow down the search animation (to help debugging)
 
-		throw new Error("method searchPath() to be completed (Question 1)");
+		if (this.isExit()) {
+			this.setMarked(true);
+			return true;
+		}
+
+		for (Cell neighbor : this.getNeighbors(false)) {
+			if (!neighbor.isMarked()) {
+				this.setMarked(true);
+				if (neighbor.searchPath()) {
+					return true;
+				}
+				this.setMarked(false);
+			}
+		}
+
+		return false;
 	}
 
 	// Question 2
@@ -50,7 +68,15 @@ class ExtendedCell extends Cell {
 	void generateRec() {
 		maze.slow();
 
-		throw new Error("method generateRec() to be completed (Question 2)");
+		List<Cell> neighbors = new ArrayList<>(this.getNeighbors(true));
+		Collections.shuffle(neighbors, new Random());
+
+		for (Cell neighbor : neighbors) {
+			if (neighbor.isIsolated()) {
+				this.breakWall(neighbor);
+				neighbor.generateRec();
+			}
+		}
 	}
 
 }
@@ -61,9 +87,8 @@ class ExtendedCell extends Cell {
 class Maze {
 
 	private int height, width;
-	/** the grid (array of cells) representing the maze */ 
+	/** the grid (array of cells) representing the maze */
 	private Cell[][] grid;
-
 
 	// Question 3
 
@@ -74,18 +99,32 @@ class Maze {
 		Bag cells = new Bag(selectionMethod);
 		cells.add(getFirstCell());
 
-		while(!cells.isEmpty()) {
+		while (!cells.isEmpty()) {
 			slow();
 
-			 throw new Error("method generateIter() to be completed (Question 3)");
+			Cell cell = cells.peek();
+			boolean hasNeighbor = false;
 
+			List<Cell> neighbors = new ArrayList<>(cell.getNeighbors(true));
+			Collections.shuffle(neighbors, new Random());
+
+			for (Cell neighbor : neighbors) {
+				if (neighbor.isIsolated()) {
+					cell.breakWall(neighbor);
+					cells.add(neighbor);
+					hasNeighbor = true;
+					break;
+				}
+			}
+
+			if (!hasNeighbor) {
+				cells.pop();
+			}
 		}
-
 	}
 
-
 	// Question 4
-	
+
 	/**
 	 * generate a maze using Wilson's algorithm
 	 */
@@ -99,7 +138,7 @@ class Maze {
 	 * @return the cell with coordinates (i, j)
 	 */
 	Cell getCell(int i, int j) {
-		if(i < 0 || i >= height || j < 0 || j >= width)
+		if (i < 0 || i >= height || j < 0 || j >= width)
 			throw new IllegalArgumentException("invalid indices");
 
 		return grid[i][j];
@@ -116,29 +155,30 @@ class Maze {
 
 	// translate coordinates to cell number
 	int coordToInt(int i, int j) {
-		if(i < 0 || i >= height || j < 0 || j >= width)
+		if (i < 0 || i >= height || j < 0 || j >= width)
 			throw new IndexOutOfBoundsException();
 
-		return i*width + j;
+		return i * width + j;
 	}
 
 	// translate cell number to coordinates
 	Coordinate intToCoord(int x) {
-		if(x < 0 || x >= height*width)
+		if (x < 0 || x >= height * width)
 			throw new IndexOutOfBoundsException();
 
-		return new Coordinate(x/width, x%width);
+		return new Coordinate(x / width, x % width);
 	}
 
-
 	// slow down the display of the maze if a graphical window is open
-	void slow(){
-		if (frame == null) return;
+	void slow() {
+		if (frame == null)
+			return;
 
 		try {
 			Thread.sleep(10);
 			frame.repaint();
-		} catch (InterruptedException e) {}
+		} catch (InterruptedException e) {
+		}
 	}
 
 	private MazeFrame frame;
@@ -149,7 +189,7 @@ class Maze {
 	}
 
 	Maze(int height, int width, boolean window) {
-		if((height <= 0) || (width <= 0))
+		if ((height <= 0) || (width <= 0))
 			throw new IllegalArgumentException("height and width of a Maze must be positive");
 
 		this.height = height;
@@ -157,27 +197,27 @@ class Maze {
 
 		grid = new Cell[height][width];
 
-		for(int i = 0; i < height; ++i)
-			for(int j = 0; j < width; ++j)
+		for (int i = 0; i < height; ++i)
+			for (int j = 0; j < width; ++j)
 				grid[i][j] = new ExtendedCell(this);
 
-		for(int i = 0; i < height; ++i) {
-			for(int j = 0; j < width; ++j) {
-				if(i < height - 1) {
-					grid[i][j].addNeighbor(grid[i+1][j]);
-					grid[i+1][j].addNeighbor(grid[i][j]);
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+				if (i < height - 1) {
+					grid[i][j].addNeighbor(grid[i + 1][j]);
+					grid[i + 1][j].addNeighbor(grid[i][j]);
 				}
 
-				if(j < width - 1) {
-					grid[i][j].addNeighbor(grid[i][j+1]);
-					grid[i][j+1].addNeighbor(grid[i][j]);
+				if (j < width - 1) {
+					grid[i][j].addNeighbor(grid[i][j + 1]);
+					grid[i][j + 1].addNeighbor(grid[i][j]);
 				}
 			}
 		}
 
-		grid[height-1][width-1].setExit(true);
+		grid[height - 1][width - 1].setExit(true);
 
-		if(window)
+		if (window)
 			frame = new MazeFrame(grid, height, width, step);
 	}
 
@@ -194,51 +234,51 @@ class Maze {
 	}
 
 	Maze(List<String> lines, boolean window) {
-		if(lines.size() < 2)
+		if (lines.size() < 2)
 			throw new IllegalArgumentException("too few lines");
 
 		this.height = Integer.parseInt(lines.get(0));
 		this.width = Integer.parseInt(lines.get(1));
 
 		this.grid = new Cell[height][width];
-		for(int i = 0; i < height; ++i)
-			for(int j = 0; j < width; ++j)
+		for (int i = 0; i < height; ++i)
+			for (int j = 0; j < width; ++j)
 				grid[i][j] = new ExtendedCell(this);
 
-		for(int i = 0; i < height; ++i) {
-			for(int j = 0; j < width; ++j) {
-				if(i < height - 1) {
-					grid[i][j].addNeighbor(grid[i+1][j]);
-					grid[i+1][j].addNeighbor(grid[i][j]);
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+				if (i < height - 1) {
+					grid[i][j].addNeighbor(grid[i + 1][j]);
+					grid[i + 1][j].addNeighbor(grid[i][j]);
 				}
 
-				if(j < width - 1) {
-					grid[i][j].addNeighbor(grid[i][j+1]);
-					grid[i][j+1].addNeighbor(grid[i][j]);
+				if (j < width - 1) {
+					grid[i][j].addNeighbor(grid[i][j + 1]);
+					grid[i][j + 1].addNeighbor(grid[i][j]);
 				}
 			}
 		}
 
-		grid[height-1][width-1].setExit(true);
+		grid[height - 1][width - 1].setExit(true);
 
 		int i = 0;
 		int j = 0;
 
-		for(String line : lines.subList(2, lines.size())) {
+		for (String line : lines.subList(2, lines.size())) {
 
-			for(int k = 0; k < line.length(); ++k) {
-				switch(line.charAt(k)) {
+			for (int k = 0; k < line.length(); ++k) {
+				switch (line.charAt(k)) {
 					case 'N':
-						grid[i][j].breakWall(grid[i-1][j]);
+						grid[i][j].breakWall(grid[i - 1][j]);
 						break;
 					case 'E':
-						grid[i][j].breakWall(grid[i][j+1]);
+						grid[i][j].breakWall(grid[i][j + 1]);
 						break;
 					case 'S':
-						grid[i][j].breakWall(grid[i+1][j]);
+						grid[i][j].breakWall(grid[i + 1][j]);
 						break;
 					case 'W':
-						grid[i][j].breakWall(grid[i][j-1]);
+						grid[i][j].breakWall(grid[i][j - 1]);
 						break;
 					case '*':
 						grid[i][j].setMarked(true);
@@ -248,13 +288,13 @@ class Maze {
 				}
 			}
 			++j;
-			if(j >= width) {
+			if (j >= width) {
 				j = 0;
 				++i;
 			}
 		}
 
-		if(window)
+		if (window)
 			frame = new MazeFrame(grid, height, width, step);
 	}
 
@@ -267,17 +307,17 @@ class Maze {
 		sb.append(width);
 		sb.append('\n');
 
-		for(int i = 0; i < height; ++i) {
-			for(int j = 0; j < width; ++j) {
-				if(i > 0 && grid[i][j].hasPassageTo(grid[i-1][j]))
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+				if (i > 0 && grid[i][j].hasPassageTo(grid[i - 1][j]))
 					sb.append('N');
-				if(j < width-1 && grid[i][j].hasPassageTo(grid[i][j+1]))
+				if (j < width - 1 && grid[i][j].hasPassageTo(grid[i][j + 1]))
 					sb.append('E');
-				if(i < height-1 && grid[i][j].hasPassageTo(grid[i+1][j]))
+				if (i < height - 1 && grid[i][j].hasPassageTo(grid[i + 1][j]))
 					sb.append('S');
-				if(j > 0 && grid[i][j].hasPassageTo(grid[i][j-1]))
+				if (j > 0 && grid[i][j].hasPassageTo(grid[i][j - 1]))
 					sb.append('W');
-				if(grid[i][j].isMarked())
+				if (grid[i][j].isMarked())
 					sb.append('*');
 				sb.append('\n');
 			}
@@ -288,9 +328,9 @@ class Maze {
 
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof Maze))
+		if (!(o instanceof Maze))
 			return false;
-		Maze that = (Maze)o;
+		Maze that = (Maze) o;
 
 		return this.toString().equals(that.toString());
 	}
@@ -301,35 +341,35 @@ class Maze {
 	}
 
 	boolean isPerfect() {
-		UnionFind uf = new UnionFind(height*width);
+		UnionFind uf = new UnionFind(height * width);
 
 		// union find cycle detection
-		for(int i = 0; i < height; ++i) {
+		for (int i = 0; i < height; ++i) {
 			// horizontal edges
-			for(int j = 0; j < width-1; ++j) {
-				if(grid[i][j].hasPassageTo(grid[i][j+1])) {
-					if(uf.sameClass(coordToInt(i,j), coordToInt(i,j+1)))
+			for (int j = 0; j < width - 1; ++j) {
+				if (grid[i][j].hasPassageTo(grid[i][j + 1])) {
+					if (uf.sameClass(coordToInt(i, j), coordToInt(i, j + 1)))
 						return false;
-					uf.union(coordToInt(i,j), coordToInt(i,j+1));
+					uf.union(coordToInt(i, j), coordToInt(i, j + 1));
 				}
 			}
 
 			// there are no vertical edges in last row, so we're done
-			if(i == height-1)
+			if (i == height - 1)
 				continue;
 
 			// vertical edges
-			for(int j = 0; j < width; ++j) {
-				if(grid[i][j].hasPassageTo(grid[i+1][j])) {
-					if(uf.sameClass(coordToInt(i,j), coordToInt(i+1,j)))
+			for (int j = 0; j < width; ++j) {
+				if (grid[i][j].hasPassageTo(grid[i + 1][j])) {
+					if (uf.sameClass(coordToInt(i, j), coordToInt(i + 1, j)))
 						return false;
-					uf.union(coordToInt(i,j), coordToInt(i+1,j));
+					uf.union(coordToInt(i, j), coordToInt(i + 1, j));
 				}
 			}
 		}
 
 		// check if connected
-		return (uf.getSize(0) == height*width);
+		return (uf.getSize(0) == height * width);
 	}
 
 	void clearMarks() {
@@ -338,4 +378,3 @@ class Maze {
 				c.setMarked(false);
 	}
 }
-
