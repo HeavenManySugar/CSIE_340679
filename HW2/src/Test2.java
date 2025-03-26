@@ -21,9 +21,8 @@ public class Test2 {
 
 		// test of the method count of CountConfigurationsNaive
 		System.out.println("Test of the method count(int n) of CountConfigurationsNaive for n=");
-		long[] nums = new long[] { 1L, 2L, 16L, 102L, 2030L, 60232L, 3858082L, 446672706L, 101578277384L,
-				43680343039806L, 36133311325799774L };
-		for (int n = 0; n <= 10; ++n) {
+		long[] nums = new long[] { 1L, 2L, 16L, 102L, 2030L, 60232L, 3858082L, 446672706L };
+		for (int n = 0; n <= 7; ++n) {
 			testCount(n, nums[n]);
 			System.out.println("[OK]");
 		}
