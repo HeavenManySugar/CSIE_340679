@@ -142,7 +142,7 @@ class CountConfigurationsNaive { // counting of stable configurations
 	}
 
 	// returning the number of grids with n lines and n columns
-	static long OriginalCount(int n) {
+	static long count(int n) {
 		if (n == 0) {
 			return 1;
 		} else if (n == 1) {
@@ -156,45 +156,6 @@ class CountConfigurationsNaive { // counting of stable configurations
 			}
 		}
 		return count;
-	}
-
-	// Use dp to optimize the counting
-	static long count(int n) {
-		if (n == 0) {
-			return 1;
-		} else if (n == 1) {
-			return 2;
-		}
-		LinkedList<Row> rows = Row.allStableRows(n);
-		int size = rows.size();
-		long[][][] dp = new long[n + 1][size][size];
-
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				dp[2][i][j] = 1;
-			}
-		}
-
-		for (int h = 3; h <= n; h++) {
-			for (int i = 0; i < size; i++) {
-				for (int j = 0; j < size; j++) {
-					for (int k = 0; k < size; k++) {
-						if (rows.get(k).areStackable(rows.get(i), rows.get(j))) {
-							dp[h][j][k] += dp[h - 1][i][j];
-						}
-					}
-				}
-			}
-		}
-
-		long totalCount = 0;
-		for (int i = 0; i < size; i++) {
-			for (int j = 0; j < size; j++) {
-				totalCount += dp[n][i][j];
-			}
-		}
-
-		return totalCount;
 	}
 }
 
