@@ -129,7 +129,41 @@ class Maze {
 	 * generate a maze using Wilson's algorithm
 	 */
 	void generateWilson() {
-		throw new Error("method generateWilson() to be completed (Question 4)");
+		ArrayList<Cell> unvisited = new ArrayList<>();
+		for (int i = 0; i < height; ++i) {
+			for (int j = 0; j < width; ++j) {
+				unvisited.add(getCell(i, j));
+			}
+		}
+
+		ArrayList<Cell> visited = new ArrayList<>();
+		visited.add(getFirstCell());
+		unvisited.remove(getFirstCell());
+
+		while (!unvisited.isEmpty()) {
+			slow();
+
+			Cell cell = unvisited.get(new Random().nextInt(unvisited.size()));
+			ArrayList<Cell> path = new ArrayList<>();
+			path.add(cell);
+
+			while (!visited.contains(cell)) {
+				cell = cell.getNeighbors(true).get(new Random().nextInt(cell.getNeighbors(true).size()));
+
+				if (path.contains(cell)) {
+					int index = path.indexOf(cell);
+					path = new ArrayList<>(path.subList(0, index + 1));
+				} else {
+					path.add(cell);
+				}
+			}
+
+			for (int i = 0; i < path.size() - 1; ++i) {
+				path.get(i).breakWall(path.get(i + 1));
+				visited.add(path.get(i));
+				unvisited.remove(path.get(i));
+			}
+		}
 	}
 
 	/**
