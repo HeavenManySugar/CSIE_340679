@@ -19,7 +19,17 @@ public class KDTree {
 	}
 
 	static KDTree insert(KDTree tree, double[] p) {
-		throw (new Error("TODO"));
+		if (tree == null)
+			return new KDTree(p, 0);
+
+		if (tree.compare(p)) {
+			tree.right = insert(tree.right, p);
+			tree.right.depth = tree.depth + 1;
+		} else {
+			tree.left = insert(tree.left, p);
+			tree.left.depth = tree.depth + 1;
+		}
+		return tree;
 	}
 
 	static double sqDist(double[] a, double[] b) {
