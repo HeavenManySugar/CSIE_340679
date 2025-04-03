@@ -33,15 +33,45 @@ public class KDTree {
 	}
 
 	static double sqDist(double[] a, double[] b) {
-		throw (new Error("TODO"));
+		double sum = 0;
+		for (int i = 0; i < a.length; i++) {
+			double d = a[i] - b[i];
+			sum += d * d;
+		}
+		return sum;
 	}
 
 	static double[] closestNaive(KDTree tree, double[] a, double[] champion) {
-		throw (new Error("TODO"));
+		double d = sqDist(a, champion);
+		double d2 = sqDist(a, tree.point);
+		if (d2 <= d) {
+			champion = tree.point;
+			d = d2;
+		}
+		if (tree.left != null) {
+			double[] leftChampion = closestNaive(tree.left, a, champion);
+			d2 = sqDist(a, leftChampion);
+			if (d2 <= d) {
+				champion = leftChampion;
+				d = d2;
+			}
+		}
+		if (tree.right != null) {
+			double[] rightChampion = closestNaive(tree.right, a, champion);
+			d2 = sqDist(a, rightChampion);
+			if (d2 <= d) {
+				champion = rightChampion;
+			}
+		}
+		return champion;
 	}
 
 	static double[] closestNaive(KDTree tree, double[] a) {
-		throw (new Error("TODO"));
+		if (tree == null)
+			return null;
+
+		double[] champion = tree.point;
+		return closestNaive(tree, a, champion);
 	}
 
 	static double[] closest(KDTree tree, double[] a, double[] champion) {
