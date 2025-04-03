@@ -89,15 +89,31 @@ public class KDTree {
 	}
 
 	static int size(KDTree tree) {
-		throw (new Error("TODO"));
+		if (tree == null) {
+			return 0;
+		}
+		return 1 + size(tree.left) + size(tree.right);
 	}
 
 	static void sum(KDTree tree, double[] acc) {
-		throw (new Error("TODO"));
+		if (tree == null) {
+			return;
+		}
+		for (int i = 0; i < acc.length; i++) {
+			acc[i] += tree.point[i];
+		}
+		sum(tree.left, acc);
+		sum(tree.right, acc);
 	}
 
 	static double[] average(KDTree tree) {
-		throw (new Error("TODO"));
+		double[] points = new double[tree.point.length];
+		int _size = size(tree);
+		sum(tree, points);
+		for (int i = 0; i < points.length; i++) {
+			points[i] /= _size;
+		}
+		return points;
 	}
 
 	static Vector<double[]> palette(KDTree tree, int maxpoints) {
