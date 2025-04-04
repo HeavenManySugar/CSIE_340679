@@ -1,3 +1,4 @@
+import java.util.Stack;
 import java.util.Vector;
 
 public class KDTree {
@@ -22,13 +23,29 @@ public class KDTree {
 		if (tree == null)
 			return new KDTree(p, 0);
 
-		if (tree.compare(p)) {
-			tree.right = insert(tree.right, p);
-			tree.right.depth = tree.depth + 1;
-		} else {
-			tree.left = insert(tree.left, p);
-			tree.left.depth = tree.depth + 1;
+		KDTree current = tree;
+		KDTree parent = null;
+		int depth = 0;
+
+		while (current != null) {
+			parent = current;
+			int axis = depth % p.length;
+			if (p[axis] >= current.point[axis]) {
+				current = current.right;
+			} else {
+				current = current.left;
+			}
+			depth++;
 		}
+
+		KDTree newNode = new KDTree(p, depth);
+		int axis = (depth - 1) % p.length;
+		if (p[axis] >= parent.point[axis]) {
+			parent.right = newNode;
+		} else {
+			parent.left = newNode;
+		}
+
 		return tree;
 	}
 
@@ -74,6 +91,7 @@ public class KDTree {
 		return closestNaive(tree, a, champion);
 	}
 
+	// -Xss JVM option to increase the stack size
 	static double[] closest(KDTree tree, double[] a, double[] champion) {
 		if (tree == null)
 			return champion;
@@ -81,18 +99,63 @@ public class KDTree {
 		// sert pour InteractiveClosest.
 		InteractiveClosest.trace(tree.point, champion);
 
-		throw (new Error("TODO"));
+		double d = sqDist(a, champion);
+		double d2 = sqDist(a, tree.point);
+		if (d2 <= d) {
+			champion = tree.point;
+			d = d2;
+		}
+
+		int idx = tree.depth % a.length;
+		KDTree near, far;
+		if (a[idx] < tree.point[idx]) {
+			near = tree.left;
+			far = tree.right;
+		} else {
+			near = tree.right;
+			far = tree.left;
+		}
+
+		champion = closest(near, a, champion);
+		d2 = sqDist(a, champion);
+
+		double planeDist = Math.abs(tree.point[idx] - a[idx]);
+		if (planeDist * planeDist < d) {
+			double[] farChampion = closest(far, a, champion);
+			d2 = sqDist(a, farChampion);
+			if (d2 <= d) {
+				champion = farChampion;
+			}
+		}
+
+		return champion;
 	}
 
 	static double[] closest(KDTree tree, double[] a) {
-		throw (new Error("TODO"));
+		if (tree == null)
+			return null;
+		double[] champion = tree.point;
+		return closest(tree, a, champion);
 	}
 
 	static int size(KDTree tree) {
 		if (tree == null) {
 			return 0;
 		}
-		return 1 + size(tree.left) + size(tree.right);
+		Stack<KDTree> stack = new Stack<>();
+		stack.push(tree);
+		int size = 0;
+		while (!stack.isEmpty()) {
+			KDTree current = stack.pop();
+			size++;
+			if (current.left != null) {
+				stack.push(current.left);
+			}
+			if (current.right != null) {
+				stack.push(current.right);
+			}
+		}
+		return size;
 	}
 
 	static void sum(KDTree tree, double[] acc) {
