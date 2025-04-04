@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
@@ -201,13 +202,13 @@ public class KDTree {
 		if (tree == null)
 			return palette;
 
-		Queue<KDTree> queue = new LinkedList<>();
+		PriorityQueue<KDTree> queue = new PriorityQueue<>(
+				(a, b) -> Integer.compare(size(b), size(a)));
 		queue.add(tree);
-
-		List<KDTree> subtrees = new ArrayList<>();
-		while (!queue.isEmpty() && subtrees.size() < maxpoints) {
+		while (queue.size() < maxpoints) {
 			KDTree current = queue.poll();
-			subtrees.add(current);
+			if (current == null || (current.left == null && current.right == null))
+				continue;
 			if (current.left != null) {
 				queue.add(current.left);
 			}
@@ -215,9 +216,8 @@ public class KDTree {
 				queue.add(current.right);
 			}
 		}
-
-		for (KDTree subtree : subtrees) {
-			double[] avg = average(subtree);
+		for (KDTree t : queue) {
+			double[] avg = average(t);
 			palette.add(avg);
 		}
 		return palette;
