@@ -1,3 +1,7 @@
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
 
@@ -91,7 +95,6 @@ public class KDTree {
 		return closestNaive(tree, a, champion);
 	}
 
-	// -Xss JVM option to increase the stack size
 	static double[] closest(KDTree tree, double[] a, double[] champion) {
 		if (tree == null)
 			return champion;
@@ -116,11 +119,15 @@ public class KDTree {
 			far = tree.left;
 		}
 
-		champion = closest(near, a, champion);
-		d2 = sqDist(a, champion);
+		double[] nearChampion = closest(near, a, champion);
+		d2 = sqDist(a, nearChampion);
+		if (d2 <= d) {
+			champion = nearChampion;
+			d = d2;
+		}
 
-		double planeDist = Math.abs(tree.point[idx] - a[idx]);
-		if (planeDist * planeDist < d) {
+		double sqPlaneDist = (tree.point[idx] - a[idx]) * (tree.point[idx] - a[idx]);
+		if (sqPlaneDist < d) {
 			double[] farChampion = closest(far, a, champion);
 			d2 = sqDist(a, farChampion);
 			if (d2 <= d) {
@@ -162,11 +169,21 @@ public class KDTree {
 		if (tree == null) {
 			return;
 		}
-		for (int i = 0; i < acc.length; i++) {
-			acc[i] += tree.point[i];
+		Stack<KDTree> stack = new Stack<>();
+		stack.push(tree);
+
+		while (!stack.isEmpty()) {
+			KDTree current = stack.pop();
+			for (int i = 0; i < acc.length; i++) {
+				acc[i] += current.point[i];
+			}
+			if (current.right != null) {
+				stack.push(current.right);
+			}
+			if (current.left != null) {
+				stack.push(current.left);
+			}
 		}
-		sum(tree.left, acc);
-		sum(tree.right, acc);
 	}
 
 	static double[] average(KDTree tree) {
@@ -180,7 +197,30 @@ public class KDTree {
 	}
 
 	static Vector<double[]> palette(KDTree tree, int maxpoints) {
-		throw (new Error("TODO"));
+		Vector<double[]> palette = new Vector<>();
+		if (tree == null)
+			return palette;
+
+		Queue<KDTree> queue = new LinkedList<>();
+		queue.add(tree);
+
+		List<KDTree> subtrees = new ArrayList<>();
+		while (!queue.isEmpty() && subtrees.size() < maxpoints) {
+			KDTree current = queue.poll();
+			subtrees.add(current);
+			if (current.left != null) {
+				queue.add(current.left);
+			}
+			if (current.right != null) {
+				queue.add(current.right);
+			}
+		}
+
+		for (KDTree subtree : subtrees) {
+			double[] avg = average(subtree);
+			palette.add(avg);
+		}
+		return palette;
 	}
 
 	public String pointToString() {
