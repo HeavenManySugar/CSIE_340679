@@ -144,7 +144,8 @@ class Maze {
 			path.add(cell);
 
 			while (!visited.contains(cell)) {
-				cell = cell.getNeighbors(true).get(new Random().nextInt(cell.getNeighbors(true).size()));
+				cell = cell.getNeighbors(true).get(
+						new Random().nextInt(cell.getNeighbors(true).size()));
 
 				if (path.contains(cell)) {
 					int index = path.indexOf(cell);
