@@ -319,6 +319,22 @@ class Median {
 	// in the form of a linked list.
 
 	static Pair<Double> median(Singly<Double> data) {
-		throw new Error("Method median (Singly<Double> data) to be completed (Question 3.3)");
+		if (data == null) {
+			return new Pair<>(Double.NaN, Double.NaN);
+		}
+		Singly<Double> sortedData = MergeSort.sort(data);
+		Singly<Double> slow = sortedData;
+		Singly<Double> fast = sortedData;
+		Singly<Double> prev = null;
+		while (fast != null && fast.next != null) {
+			prev = slow;
+			slow = slow.next;
+			fast = fast.next.next;
+		}
+		if (fast == null) {
+			return new Pair<>(prev.element, slow.element);
+		} else {
+			return new Pair<>(slow.element, slow.element);
+		}
 	}
 }
