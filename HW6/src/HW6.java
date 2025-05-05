@@ -258,14 +258,54 @@ class MergeSort {
 	// "String"
 
 	static <E extends Comparable<E>> Singly<E> merge(Singly<E> l1, Singly<E> l2) {
-		throw new Error("Method merge(Singly<E> l1, Singly<E> l2) to be completed (Question 3.1)");
+		if (l1 == null)
+			return l2;
+		if (l2 == null)
+			return l1;
+
+		Singly<E> head = null;
+		Singly<E> tail = null;
+
+		if (l1.element.compareTo(l2.element) <= 0) {
+			head = l1;
+			l1 = l1.next;
+		} else {
+			head = l2;
+			l2 = l2.next;
+		}
+		tail = head;
+
+		while (l1 != null && l2 != null) {
+			if (l1.element.compareTo(l2.element) <= 0) {
+				tail.next = l1;
+				l1 = l1.next;
+			} else {
+				tail.next = l2;
+				l2 = l2.next;
+			}
+			tail = tail.next;
+		}
+
+		if (l1 != null)
+			tail.next = l1;
+		else
+			tail.next = l2;
+
+		return head;
 	}
 
 	// Question 3.1
 	// Identical to sort(Singly<String> l) with "E" instead of "String"
 
 	static <E extends Comparable<E>> Singly<E> sort(Singly<E> l) {
-		throw new Error("Method sort(Singly<E> l) to be completed (Question 3.1)");
+		if (l == null || l.next == null)
+			return l;
+
+		Singly<E> secondHalf = Singly.split(l);
+		l = MergeSort.sort(l);
+		secondHalf = MergeSort.sort(secondHalf);
+
+		return MergeSort.merge(l, secondHalf);
 	}
 
 }
