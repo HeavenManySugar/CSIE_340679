@@ -15,6 +15,8 @@
 
 // SINGLY 
 
+import java.util.HashMap;
+
 class Singly<E> {
 	E element;
 	Singly<E> next;
@@ -207,7 +209,24 @@ class Occurrence implements Comparable<Occurrence> {
 	// The list passed as an argument can be destroyed.
 
 	static Singly<Occurrence> count(Singly<String> l) {
-		throw new Error("Method count(Singly<String> l) to be completed (Question 2.3)");
+		if (l == null)
+			return null;
+
+		HashMap<String, Integer> wordCount = new HashMap<>();
+		Singly<String> cursor = l;
+
+		while (cursor != null) {
+			String word = cursor.element;
+			wordCount.put(word, wordCount.getOrDefault(word, 0) + 1);
+			cursor = cursor.next;
+		}
+
+		Singly<Occurrence> result = null;
+		for (String word : wordCount.keySet()) {
+			result = new Singly<>(new Occurrence(word, wordCount.get(word)), result);
+		}
+
+		return result;
 	}
 
 	// Question 3.2
