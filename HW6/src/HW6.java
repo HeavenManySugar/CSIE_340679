@@ -233,7 +233,7 @@ class Occurrence implements Comparable<Occurrence> {
 	// Method of comparison necessary for the use of the sorting algorithm
 
 	public int compareTo(Occurrence that) {
-		throw new Error("Method compareTo(Occurrence that) to be completed (Question 3.2)");
+		return this.count != that.count ? Integer.compare(that.count, this.count) : this.word.compareTo(that.word);
 	}
 
 	// Question 3.2
@@ -241,7 +241,7 @@ class Occurrence implements Comparable<Occurrence> {
 	// is sorted in descending order of multiplicity.
 
 	static Singly<Occurrence> sortedCount(Singly<String> l) {
-		throw new Error("Method sortedCount(Singly<String> l) to be completed (Question 3.2)");
+		return MergeSort.sort(Occurrence.count(l));
 	}
 }
 
