@@ -132,7 +132,40 @@ class MergeSortString {
 	// is done "in place".
 
 	static Singly<String> merge(Singly<String> l1, Singly<String> l2) {
-		throw new Error("Method merge(Singly<String> l1, Singly<String> l2) to be completed (Question 2.2)");
+		if (l1 == null)
+			return l2;
+		if (l2 == null)
+			return l1;
+
+		Singly<String> head = null;
+		Singly<String> tail = null;
+
+		if (l1.element.compareTo(l2.element) <= 0) {
+			head = l1;
+			l1 = l1.next;
+		} else {
+			head = l2;
+			l2 = l2.next;
+		}
+		tail = head;
+
+		while (l1 != null && l2 != null) {
+			if (l1.element.compareTo(l2.element) <= 0) {
+				tail.next = l1;
+				l1 = l1.next;
+			} else {
+				tail.next = l2;
+				l2 = l2.next;
+			}
+			tail = tail.next;
+		}
+
+		if (l1 != null)
+			tail.next = l1;
+		else
+			tail.next = l2;
+
+		return head;
 	}
 
 	// Question 2.2
@@ -141,7 +174,14 @@ class MergeSortString {
 	// The list passed as an argument is destroyed during the operation.
 
 	static Singly<String> sort(Singly<String> l) {
-		throw new Error("Method sort(Singly<String> l) to be completed (Question 2.2)");
+		if (l == null || l.next == null)
+			return l;
+
+		Singly<String> secondHalf = Singly.split(l);
+		l = MergeSortString.sort(l);
+		secondHalf = MergeSortString.sort(secondHalf);
+
+		return MergeSortString.merge(l, secondHalf);
 	}
 
 }
