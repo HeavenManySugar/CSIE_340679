@@ -111,7 +111,31 @@ class RushHour {
 
 	/** print the solution */
 	void printSolution(State s) {
-		throw new Error("Method printSolution(State s) to be completed (Question 4)");
+		if (s == null) {
+			System.out.println("No solution found");
+			return;
+		}
+
+		List<State> path = new ArrayList<>();
+		while (s != null) {
+			path.add(s);
+			s = s.prev;
+		}
+
+		Collections.reverse(path);
+
+		System.out.println((path.size() - 1) + " trips");
+
+		for (int i = 0; i < path.size(); i++) {
+			State state = path.get(i);
+			if (i > 0) {
+				String direction = state.d > 0 ? "right" : "left";
+				if (!state.plateau.horiz[state.c]) {
+					direction = state.d > 0 ? "down" : "up";
+				}
+				System.out.println("we move the " + state.plateau.color[state.c] + " vehicle to the " + direction);
+			}
+		}
 	}
 
 }
