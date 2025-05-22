@@ -33,16 +33,80 @@ class RushHour {
 
 	/** return the list of possible moves from s */
 	LinkedList<State> moves(State s) {
-		throw new Error("Method moves(State s) to be completed (Question 2)");
+		LinkedList<State> listMoves = new LinkedList<State>();
+		boolean[][] free = s.free();
+		for (int i = 0; i < nbCars; i++) {
+			if (horiz[i]) {
+				if (s.pos[i] > 0 && free[moveOn[i]][s.pos[i] - 1]) {
+					listMoves.add(new State(s, i, -1));
+				}
+				if (s.pos[i] + len[i] < 6 && free[moveOn[i]][s.pos[i] + len[i]]) {
+					listMoves.add(new State(s, i, 1));
+				}
+			} else {
+				if (s.pos[i] > 0 && free[s.pos[i] - 1][moveOn[i]]) {
+					listMoves.add(new State(s, i, -1));
+				}
+				if (s.pos[i] + len[i] < 6 && free[s.pos[i] + len[i]][moveOn[i]]) {
+					listMoves.add(new State(s, i, 1));
+				}
+			}
+		}
+		return listMoves;
 	}
 
+	/** search for a solution from state s using DFS */
 	State solveDFS(State s) {
-		throw new Error("Method solveDFS(State s) to be completed (Question 3.1)");
+		HashSet<State> visited = new HashSet<>();
+		Stack<State> stack = new Stack<>();
+
+		stack.push(s);
+		visited.add(s);
+
+		while (!stack.isEmpty()) {
+			State current = stack.pop();
+
+			if (current.success()) {
+				return current; // Found solution
+			}
+
+			LinkedList<State> neighbors = moves(current);
+			for (State neighbor : neighbors) {
+				if (!visited.contains(neighbor)) {
+					stack.push(neighbor);
+					visited.add(neighbor);
+				}
+			}
+		}
+
+		return null; // No solution found
 	}
 
 	/** search for a solution from state s */
 	State solveBFS(State s) {
-		throw new Error("Method solveBFS(State s) to be completed (Question 3.2)");
+		HashSet<State> visited = new HashSet<>();
+		Queue<State> queue = new LinkedList<>();
+
+		queue.add(s);
+		visited.add(s);
+
+		while (!queue.isEmpty()) {
+			State current = queue.poll();
+
+			if (current.success()) {
+				return current; // Found solution
+			}
+
+			LinkedList<State> neighbors = moves(current);
+			for (State neighbor : neighbors) {
+				if (!visited.contains(neighbor)) {
+					queue.add(neighbor);
+					visited.add(neighbor);
+				}
+			}
+		}
+
+		return null; // No solution found
 	}
 
 	/** print the solution */
